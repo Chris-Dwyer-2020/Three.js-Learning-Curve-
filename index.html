@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+    <html>
+        <head>
+            <title>Three.JS Tutorials</title>
+
+    <style>
+        body { margin:0} 
+        canvas { width: 100%; height: 100% };
+    </style>
+</head>
+<body>
+    <!--margin above is to make sure the cavas covers the entire browser-->
+    <script src = 'three.js'></script>
+<script src = 'OrbitControls.js' ></script>
+
+    <script>
+
+    // ** STATS **
+
+    // Provides the following...
+    // Frames rendedred in the last second (Blue box). - want a high number 
+    // Milliseconds to render a frame (Green box) - want a low number 
+    // MBytes of allocated memory (Pink box) - Just provides precise info 
+    (function(){var script=document.createElement('script');script.onload=
+    function(){var stats=new Stats();document.body.appendChild(stats.dom);
+    requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};
+    script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
+
+    // ** SCENE**
+
+        var scene = new THREE.Scene( ); // where objects are placed
+        var camera = new THREE.PerspectiveCamera( 75, 
+        window.innerWidth / window.innerHeight, 0.1, 1000 )
+         // persepective allows you to have depth
+
+         var renderer = new THREE.WebGLRenderer ( );
+         renderer.setSize( window.innerWidth, window.innerHeight );
+         document.body.appendChild( renderer.domElement );
+
+
+    // ** UPDATES VIEWPORT **  
+
+    window.addEventListener( 'resize' , function() {
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    renderer.setSize( width, height ); 
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix ( );
+} );
+
+controls = new THREE.OrbitControls( camera, renderer.domElement ); 
+
+camera.position.z = 3; // camera distance from centre of scene 
+
+// ** BOX GEOMETRY ** 
+
+var geometry = new THREE.BoxGeometry( 2, 2, 2 );
+var cubeMaterials = [
+    new THREE.MeshLambertMaterial( { map: new THREE.TextureLoader( ).load( 'image1.png'), side: THREE.DoubleSide} ),
+    new THREE.MeshPhongMaterial( { map: new THREE.TextureLoader( ).load( 'image2.jpg'), side: THREE.DoubleSide} ),
+    new THREE.MeshLambertMaterial( { map: new THREE.TextureLoader( ).load( 'image3.jpg'), side: THREE.DoubleSide} ),
+    new THREE.MeshPhongMaterial( { map: new THREE.TextureLoader( ).load( 'image4.jpg'), side: THREE.DoubleSide} ),
+    new THREE.MeshLambertMaterial( { map: new THREE.TextureLoader( ).load( 'image5.jpg'), side: THREE.DoubleSide} ),
+    new THREE.MeshPhongMaterial( { map: new THREE.TextureLoader( ).load( 'image6.jpg'), side: THREE.DoubleSide} ),
+];
+
+// ** MESH'S MATERIAL TO GEOMETRY **
+
+var material = new THREE.MeshFaceMaterial (cubeMaterials); //( { colour: 0xffffff, wireframe: true } );
+var cube = new THREE.Mesh( geometry, material );
+scene.add ( cube );
+
+
+
+// ** ADDING WALLS CEILING AND FLOORS **
+
+// for each object below...
+// creates the geometry of walls, ceiling and floor 
+// choose the material you want to go onto the geometry 
+// mesh material to geometry 
+// position of object in scene relative to the centre of scene
+// add object to scene
+
+// Floor 
+
+var floorGeometry = new THREE.CubeGeometry ( 10.25, 0.5, 15);
+var floorMaterial = new THREE.MeshLambertMaterial ( { map: new THREE.TextureLoader ( ).load( 'floor.jpg' ), side: THREE.doubleSide});
+var floorCube = new THREE.Mesh( floorGeometry, floorMaterial );
+floorCube.position.y = -5;
+scene.add ( floorCube )
+
+// Ceiling 
+
+var ceilingGeometry = new THREE.CubeGeometry ( 10.25, 0.5, 10);
+var ceilingMaterial = new THREE.MeshLambertMaterial ( { map: new THREE.TextureLoader ( ).load( 'ceiling.jpg' ), side: THREE.doubleSide});
+var ceilingCube = new THREE.Mesh( ceilingGeometry, ceilingMaterial );
+ceilingCube.position.y = 5;
+scene.add ( ceilingCube )
+
+// Left Wall 
+
+var leftWallGeometry = new THREE.CubeGeometry ( 0.25, 9.5, 10);
+var leftWallMaterial = new THREE.MeshLambertMaterial ( { map: new THREE.TextureLoader ( ).load( 'walls.jpg' ), side: THREE.doubleSide});
+var leftWallCube = new THREE.Mesh( leftWallGeometry, leftWallMaterial );
+leftWallCube.position.x = -5;
+scene.add ( leftWallCube )
+
+// Right wall 
+
+var rightWallGeometry = new THREE.CubeGeometry ( 0.25, 9.5, 10);
+var rightWallMaterial = new THREE.MeshLambertMaterial ( { map: new THREE.TextureLoader ( ).load( 'walls.jpg' ), side: THREE.doubleSide});
+var rightWallCube = new THREE.Mesh( rightWallGeometry, rightWallMaterial );
+rightWallCube.position.x = 5;
+scene.add ( rightWallCube )
+
+
+
+// ** LIGHTING **
+
+// meshBasicMaterial isn't effected by lighting, so doesn't need a light source
+// When adding other material types you will need a light 
+// change to Lambert or phong type materials. (Lambert = Matt , Phong = Gloss)
+
+// ** Ambient ** 
+
+var ambientLight = new THREE.AmbientLight ( 0xffffff, 0.8 ); // no need for effctive distnce on an ambient light 
+// creates variable for light and pulls the ambient light from three.js 
+scene.add ( ambientLight ); // adds light to scene
+
+// ** Point lights **
+
+var light1 = new THREE.PointLight ( 0xff0040, 4, 50 ); // colour, intensity, effective distance
+// scene.add ( light1 );
+
+var light2 = new THREE.PointLight ( 0x0040ff, 2, 50 ); // colour, intensity, effective distance
+// scene.add ( light2 );
+
+var light3 = new THREE.PointLight ( 0x80ff80, 4, 50 ); // colour, intensity, effective distance
+// scene.add ( light3 );
+
+// ** Directional light ** 
+
+var directionalLight = new THREE.DirectionalLight ( 0xFFFFFF, 1);
+directionalLight.position.set( 0, 4, 0 ); 
+// scene.add ( directionalLight ); 
+
+// ** Spotlight **
+
+// emits a cone downwards
+
+var spotLight = new THREE.SpotLight ( 0xff45f6, 25);
+spotLight.position.set( 4, 4, 4 ); // x, y, z
+// scene.add ( spotLight );
+
+// ** Shadows ** 
+
+// Put the below line before scene.add to create a shadow
+// light.castShadow = true;
+
+
+// ** GAME LOGIC ** 
+
+var update = function( ) {
+
+//  cube.rotation.x += 0.01; // x = x + 0.01 is the same as x += 0.01
+//  cube.rotation.y += 0.005;
+
+
+// moving lights
+
+ var time = Date.now( ) * 0.0005
+
+light1.position.x = Math.sin( time * 0.7 ) * 30;
+light1.position.y = Math.cos( time * 0.5 ) * 40;
+light1.position.z = Math.cos( time * 0.3 ) * 30;
+
+light2.position.x = Math.cos( time * 0.3 ) * 30;
+light2.position.y = Math.sin( time * 0.5 ) * 40;
+light2.position.z = Math.sin( time * 0.7 ) * 30;
+
+light3.position.x = Math.sin( time * 0.7 ) * 30;
+light3.position.y = Math.cos( time * 0.3 ) * 40;
+light3.position.z = Math.sin( time * 0.5 ) * 30;
+
+};
+
+
+// ** DRAW SCENE **  
+         var render = function( ){ 
+             renderer.render ( scene, camera );
+         };
+
+/*run game loop (update, render, repeat) - game construct that specifies 
+how the game is flowing*/
+var GameLoop = function( ) { 
+    requestAnimationFrame( GameLoop );
+
+    update( );
+    render ( );
+};
+
+GameLoop( );
+
+    </script>
+</body>
+</html>
